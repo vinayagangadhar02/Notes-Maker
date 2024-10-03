@@ -1,13 +1,37 @@
 import React from 'react'
 import ProfileInfo from '../Cards/ProfileInfo'
-function navbar() {
+import { useNavigate } from 'react-router-dom'
+import SearchBar from '../SearchBar/SearchBar'
+import { useState } from 'react'
+const Navbar=()=> {
+  
+const navigate=useNavigate();
+const [searchQuery,setSearchQuery]=useState("");
+const onLogout=()=>{
+  navigate("/login");
+}
+
+const handleSearch=()=>{
+
+}
+const onClearSearch=()=>{
+  setSearchQuery("")
+  }
+  
+
   return (
     <div className='bg-white flex items-center justify-between px-6 py-2 drop-shadow'>
       <h2 className='text-xl font-medium text-black py-2'>Notes</h2>
-      <ProfileInfo />
+      <SearchBar value={searchQuery}
+       onChange={({target})=>{
+        setSearchQuery(target.value)}}
+        handleSearch={{handleSearch}}
+        onClearSearch={onClearSearch}
+        />
+      <ProfileInfo OnLogout={onLogout} />
     </div>
     
   )
 }
 
-export default navbar
+export default Navbar

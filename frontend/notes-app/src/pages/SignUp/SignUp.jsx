@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { validateEmail } from "../../utils/helper";
 
 const SignUp = () => {
-  const [name,setName]=useState("")
+   const [name,setName]=useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
