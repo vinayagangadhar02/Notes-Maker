@@ -1,6 +1,8 @@
 import React from 'react'
 import Navbar from "../../components/Navbar/Navbar";
 import NoteCard from "../../components/Cards/NoteCard"
+import {MdAdd} from "react-icons/md" 
+
 const Home = () => {
   return (
     <>
@@ -22,9 +24,62 @@ const Home = () => {
 
       }}
       />
+
+<NoteCard title="meeting"
+      date="12"
+      content="meeting on ghsgdhjsgdhj"
+      tags="#meeting"
+      isPinned={true}
+      onEdit={()=>{
+
+      }}
+      onDelete={()=>{
+
+      }}
+      onPinNote={()=>{
+
+      }}
+      />
+
+<NoteCard title="meeting"
+      date="12"
+      content="meeting on ghsgdhjsgdhj"
+      tags="#meeting"
+      isPinned={true}
+      onEdit={()=>{
+
+      }}
+      onDelete={()=>{
+
+      }}
+      onPinNote={()=>{
+
+      }}
+      />
+
+<NoteCard title="meeting"
+      date="12"
+      content="meeting on ghsgdhjsgdhj"
+      tags="#meeting"
+      isPinned={true}
+      onEdit={()=>{
+
+      }}
+      onDelete={()=>{
+
+      }}
+      onPinNote={()=>{
+
+      }}
+      />
       </div>
     </div>
+<button className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' onClick={()=>{}}>
 
+
+<MdAdd className="text-[32px] text-white"/>
+
+</button>
    </>
   )
 }
