@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Navbar from "../../components/Navbar/Navbar";
 import NoteCard from "../../components/Cards/NoteCard"
 import {MdAdd} from "react-icons/md" 
+import AddEditNotes from './AddEditNotes';
 
 const Home = () => {
+      const [openAddEditModel,setOpenAddEditModel]=useState({
+            isShown:false,
+            type:"add",
+            data:null
+      })
   return (
     <>
     <Navbar />
@@ -80,8 +86,12 @@ const Home = () => {
 <MdAdd className="text-[32px] text-white"/>
 
 </button>
+
+<AddEditNotes />
    </>
+
   )
+
 }
 
 export default Home
