@@ -104,12 +104,21 @@ const Home = () => {
         }
     }}
     contentLabel=""
-    className="w-[50%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 "
+    className="w-[45%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 "
      >
-    <AddEditNotes />
+   <AddEditNotes 
+   type={openAddEditModel.type}
+   noteData={openAddEditModel.data}
+  onClose={() => {
+    setOpenAddEditModel({
+      isShown: false,
+      type: "add",
+      data: null
+    });
+  }} 
+/>
 </Modal>
-
-   </>
+</>
 
   )
 
