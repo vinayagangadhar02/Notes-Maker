@@ -1,20 +1,59 @@
 import React, { useState } from 'react'
 import TagInput from '../../components/Input/TagInput'
 import { MdClose } from 'react-icons/md'
+import axiosInstance from "../../utils/axios"
+const AddEditNotes = ({noteData,type,onClose,getAllNotes,showToastMessage}) => {
+  showToastMessage("Note Added Successfully")
 
-const AddEditNotes = ({noteData,type,onClose}) => {
-
-
-const [title,setTitle]=useState("")
-const [content,setContent]=useState("")
-const [tags,setTags] =useState([])
+const [title,setTitle]=useState(noteData?.title || "")
+const [content,setContent]=useState(noteData?.content ||"")
+const [tags,setTags] =useState(noteData?.tags ||[])
 const[error,setError]=useState(null)
 
 const addNewNote=async()=>{
+try{
+      const response=await axiosInstance.post("/add-note",{
+        title,
+        content,
+        tags
+      })
+ if(response?.data?.note){
+  showToastMessage("Note Added Successfully")
+  getAllNotes()
+  onClose()
+ }
+
 
 }
+catch(error){
+if(error?.response?.data?.message){
+  setError(error.response.data.message)
+}
+}
+}
+
+
 const editNote=async()=>{
 
+  try{
+    const response=await axiosInstance.put(`/edit-note/${noteData._id}`,{
+      title,
+      content,
+      tags
+    })
+if(response?.data?.note){
+  showToastMessage("Note Edited Successfully")
+getAllNotes()
+onClose()
+}
+
+
+}
+catch(error){
+if(error?.response?.data?.message){
+setError(error.response.data.message)
+}
+}
 }
 
 const handleAddNote=()=>{
@@ -29,7 +68,7 @@ const handleAddNote=()=>{
   }
   setError("")
   if(type==='edit'){
-    editNote(_)
+    editNote()
   }
   else{
     addNewNote()
@@ -59,7 +98,7 @@ const handleAddNote=()=>{
             type="text"
             className='text-sm text-slate-950 outline-none bg-slate-50 p-2 rounded rows-66'
             placeholder='content'
-            rows={15}
+            rows={10}
             value={content}
             onChange={({target})=>setContent(target.value)}
             />
@@ -70,7 +109,7 @@ const handleAddNote=()=>{
       </div>
       {error && <p className='text-red-500 text-xs pt-4'>{error}</p>}
 
-  <button className='btn-primary font-medium mt-5 p-3' onClick={handleAddNote}>ADD</button>
+  <button className='btn-primary font-medium mt-5 p-3' onClick={handleAddNote}>{type==='edit'?'EDIT' :'ADD' }</button>
     </div>
   )
 }

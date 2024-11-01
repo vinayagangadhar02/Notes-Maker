@@ -36,10 +36,10 @@ app.post("/create-account", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
+    const newUser = new User({ username:username, email, password: hashedPassword });
     await newUser.save();
 
-    const accessToken = jwt.sign({ id: newUser._id }, process.env.SECRET_TOKEN, { expiresIn: "3600m" });
+    const accessToken = jwt.sign({id: newUser._id }, process.env.SECRET_TOKEN, { expiresIn: "3600m" });
 
     return res.json({ error: false, user: newUser, accessToken, msg: "Registration successful" });
   } catch (error) {
@@ -48,12 +48,14 @@ app.post("/create-account", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
+
   try {
     const validation = loginSchema.safeParse(req.body);
     if (!validation.success) {
+      
       return res.status(400).json({ error: true, msg: validation.error.errors[0].message });
     }
-
+   
     const { email, password } = validation.data;
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -69,29 +71,30 @@ app.post("/login", async (req, res) => {
 });
 
 
+app.get("/get-user", authenticateToken, async (req, res) => {
+  const  user = req.user;
+  console.log(user)
+  const isUser = await User.findOne({ _id: user.id });
 
-app.get("/get-user",authenticateToken,async(req,res)=>{
-const {user}=req.user;
-const isUser=await User.findOne({_id:user._id})
-if(isUser){
-  return res.sendStatus(401)
-}
+  if (!isUser) {
+    return res.sendStatus(401); 
+  }
 
-return res.json({
-  user:{
-    username:isUser.username,
-    email:isUser.email,
-     _id:isUser._id,
-     createdOn:isUser.createdOn
-  },
-  message:""
-})
-})
+  return res.json({
+    user: {
+      username: isUser.username,
+      email: isUser.email,
+      _id: isUser._id,
+      createdOn: isUser.createdOn
+    },
+    message: ""
+  });
+});
 
 
 app.post("/add-note",authenticateToken,async (req,res)=>{
   const{title,content,tags}=req.body;
-  const {user}=req.user;
+  const user=req.user;
 
   if(!title){
     return res.status(400).json({error:true,message:"Title required"})
@@ -102,11 +105,12 @@ app.post("/add-note",authenticateToken,async (req,res)=>{
   }
 
   try{
+    
     const note=new Note({
      title,
      content,
-     tags:tags||[],
-     userId:user._id
+     tags:tags || [],
+     userId:user.id
     })
     await note.save()
 
@@ -127,7 +131,7 @@ app.post("/add-note",authenticateToken,async (req,res)=>{
 app.put("/edit-note/:noteId",authenticateToken,async (req,res)=>{
   const noteId=req.params.noteId
   const{title,content,tags,isPinned}=req.body;
-  const {user}=req.user;
+  const user=req.user;
 
   if(!title){
     return res.status(400).json({error:true,message:"Title required"})
@@ -138,7 +142,7 @@ app.put("/edit-note/:noteId",authenticateToken,async (req,res)=>{
   }
 
   try{
-    const note=await Note.findOne({_id:noteId,userId:user._id})
+    const note=await Note.findOne({_id:noteId,userId:user.id})
 
     if(!note){
       return res.status(404).json({error:true,message:"Note not found"})
@@ -168,14 +172,16 @@ app.put("/edit-note/:noteId",authenticateToken,async (req,res)=>{
   }
 })
 
-app.get("/get-all-notes/", authenticateToken, async (req, res) => {
-  const { user } = req.user;
+app.get("/get-all-notes", authenticateToken, async (req, res) => {
+  const user  = req.user;
   try {
     const notes = await Note.find({
-      userId: user._id
+      userId: user.id
     }).sort({ isPinned: -1 });
     
-    return res.status(200).json(notes);
+    return res.status(200).json({
+      notes:notes
+    });
   } catch (error) {
     return res.status(500).json({
       error: true,
@@ -187,10 +193,10 @@ app.get("/get-all-notes/", authenticateToken, async (req, res) => {
 
 app.delete("/delete-note/:noteId",authenticateToken,async(req,res)=>{
   const noteId=req.params.noteId;
-  const {user}=req.user;
+  const user=req.user;
 
   try{
-    const note=await Note.findOne({_id:noteId,userId:user._id})
+    const note=await Note.findOne({_id:noteId,userId:user.id})
 
     if(!note){
       return res.status(404).json({
@@ -198,7 +204,7 @@ app.delete("/delete-note/:noteId",authenticateToken,async(req,res)=>{
         message:"Note not found"
       })
     }
-    await Note.deleteOne({_id:noteId,userId:user._id})
+    await Note.deleteOne({_id:noteId,userId:user.id})
     return res.json({
       error:false,
       message:"Note deleted successfully"
@@ -217,11 +223,11 @@ app.delete("/delete-note/:noteId",authenticateToken,async(req,res)=>{
 app.put("/pinned/:noteId",authenticateToken,async(req,res)=>{
   const noteId=req.params.noteId
   const{isPinned}=req.body;
-  const {user}=req.user;
+  const user=req.user;
 
 
   try{
-    const note=await Note.findOne({_id:noteId,userId:user._id})
+    const note=await Note.findOne({_id:noteId,userId:user.id})
 
     if(!note){
       return res.status(404).json({error:true,message:"Note not found"})
