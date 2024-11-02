@@ -7,6 +7,9 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import Toast from "../../components/ToastMessage/Toast";
+import EmptyCard from "../../components/Cards/EmptyCard";
+
+
 
 const Home = () => {
   const [openAddEditModel, setOpenAddEditModel] = useState({
@@ -14,10 +17,58 @@ const Home = () => {
     type: "add",
     data: null,
   });
-
+  const [isLight,setIsLight]=useState(false)
   const [userInfo, setUserInfo] = useState(null);
   const [allNotes, setAllNotes] = useState([]);
   const navigate = useNavigate();
+  const [IsSearch,setIsSearch]=useState(false)
+
+  const toggleTheme = () => {
+    setIsLight(!isLight); 
+  };
+  
+ 
+const onSearchNote=async(query)=>{
+  try{
+    const response=await axiosInstance.get("/search-note",{
+            params:{query},
+
+    })
+    if(response?.data?.notes){
+     setIsSearch(true)
+     setAllNotes(response.data.notes) 
+    }
+  }
+    catch(error){
+        console.log(error)
+    }
+  }
+
+  const updateIsPinned=async (noteData)=>{
+    try{
+      const response=await axiosInstance.put(`/pinned-note/${noteData._id}`,{
+        "isPinned":!noteData.isPinned
+      })
+  if(response?.data?.note){
+    if(!noteData.isPinned)
+    showToastMessage("Note Pinned Successfully")
+  else
+  showToastMessage("Note Unpinned Successfully")
+  getAllNotes()
+
+  }
+  }
+  catch(error){
+console.log(error)
+  }
+  }
+  
+
+
+  const handleClearSearch=()=>{
+    setIsSearch(false);
+    getAllNotes()
+  }
 
   const [showToastMsg, setShowToastMsg] = useState({
     isShown: false,
@@ -33,7 +84,7 @@ const Home = () => {
     });
   };
 
-  const showToastMesssage = (message, type) => {
+  const showToastMessage = (message, type) => {
     setShowToastMsg({
       isShown: true,
       message,
@@ -74,6 +125,26 @@ const Home = () => {
     }
   };
 
+  const deleteNote=async (noteData)=>{
+    try{
+      const response=await axiosInstance.delete(`/delete-note/${noteData._id}`)
+  if(response?.data?.note){
+    showToastMessage("Note Deleted Successfully",'delete')
+  getAllNotes()
+
+  
+  }
+  
+  
+  }
+  catch(error){
+  if(!error?.response?.data?.error){
+console.log("An unexpected error has occured")
+  }
+  }
+  }
+
+
   useEffect(() => {
     getAllNotes();
     getUserInfo();
@@ -81,10 +152,10 @@ const Home = () => {
   }, []);
 
   return (
-    <>
-      <Navbar userInfo={userInfo} />
+    <div className={`${isLight ? 'bg-white text-black' : 'bg-black text-white'} min-h-screen`}>
+      <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} isLight={isLight} toggleTheme={toggleTheme} />
       <div className="container mx-auto ">
-        <div className="grid grid-cols-3 gap-4 mt-8">
+       {allNotes.length > 0 ? <div className="grid grid-cols-3 gap-4 mt-8">
           {allNotes.map((note) => (
             <NoteCard
               key={note._id}
@@ -96,11 +167,17 @@ const Home = () => {
               onEdit={() => {
                 handleEdit(note);
               }}
-              onDelete={() => {}}
-              onPinNote={() => {}}
+              onDelete={() => {
+                deleteNote(note)
+              }}
+              onPinNote={() => {
+                updateIsPinned(note)
+              }}
             />
           ))}
-        </div>
+        </div>:(
+          <EmptyCard IsSearch={IsSearch,isLight}/>
+        )}
       </div>
       <button
         className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"
@@ -139,7 +216,7 @@ const Home = () => {
             });
           }}
           getAllNotes={getAllNotes}
-          showToastMesssage={showToastMesssage}
+          showToastMessage={showToastMessage}
         />
       </Modal>
       <Toast
@@ -148,7 +225,7 @@ const Home = () => {
       type={showToastMsg.type}
       onClose={handleCloseToast}
       />
-    </>
+    </div>
   );
 };
 

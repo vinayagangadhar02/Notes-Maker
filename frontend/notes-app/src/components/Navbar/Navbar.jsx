@@ -3,8 +3,11 @@ import ProfileInfo from '../Cards/ProfileInfo'
 import { useNavigate } from 'react-router-dom'
 import SearchBar from '../SearchBar/SearchBar'
 import { useState } from 'react'
-const Navbar=({userInfo})=> {
-  
+import DarkLightMode from '../DarkLightMode/DarkLightMode'
+
+
+const Navbar=({userInfo,onSearchNote,handleClearSearch,isLight,toggleTheme})=> {
+
 const navigate=useNavigate();
 const [searchQuery,setSearchQuery]=useState("");
 const onLogout=()=>{
@@ -13,10 +16,15 @@ const onLogout=()=>{
 }
 
 const handleSearch=()=>{
-
+if(searchQuery){
+  onSearchNote(searchQuery)
 }
+}
+
+
 const onClearSearch=()=>{
-  setSearchQuery("")
+  setSearchQuery("");
+  handleClearSearch()
   }
   
 
@@ -29,7 +37,10 @@ const onClearSearch=()=>{
         handleSearch={handleSearch}
         onClearSearch={onClearSearch}
         />
+        <div className=' flex items-center justify-between  px-6 py-2 drop-shadow'>
+     <DarkLightMode isLight={isLight} toggleTheme={toggleTheme} />
       <ProfileInfo userInfo={userInfo} OnLogout={onLogout} />
+      </div>
     </div>
     
   )

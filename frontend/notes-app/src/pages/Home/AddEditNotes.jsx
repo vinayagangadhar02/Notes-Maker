@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import TagInput from '../../components/Input/TagInput'
 import { MdClose } from 'react-icons/md'
 import axiosInstance from "../../utils/axios"
+
+
 const AddEditNotes = ({noteData,type,onClose,getAllNotes,showToastMessage}) => {
-  showToastMessage("Note Added Successfully")
+  
 
 const [title,setTitle]=useState(noteData?.title || "")
 const [content,setContent]=useState(noteData?.content ||"")
