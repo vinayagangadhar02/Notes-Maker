@@ -3,7 +3,6 @@ import TagInput from '../../components/Input/TagInput'
 import { MdClose } from 'react-icons/md'
 import axiosInstance from "../../utils/axios"
 
-
 const AddEditNotes = ({noteData,type,onClose,getAllNotes,showToastMessage}) => {
   
 
@@ -21,7 +20,7 @@ try{
       })
  if(response?.data?.note){
   showToastMessage("Note Added Successfully")
-  getAllNotes()
+  await getAllNotes()
   onClose()
  }
 
@@ -45,7 +44,7 @@ const editNote=async()=>{
     })
 if(response?.data?.note){
   showToastMessage("Note Edited Successfully")
-getAllNotes()
+await getAllNotes()
 onClose()
 }
 
@@ -89,7 +88,7 @@ const handleAddNote=()=>{
            <input
            type="text"
            className='text-2xl text-slate-950 outline-none'
-           placeholder='Go To Gym At 5'
+           placeholder='Meeting at 9'
            value={title}
            onChange={({target})=>setTitle(target.value)}
            />
@@ -99,19 +98,19 @@ const handleAddNote=()=>{
             <textarea
             type="text"
             className='text-sm text-slate-950 outline-none bg-slate-50 p-2 rounded rows-66'
-            placeholder='content'
+            placeholder='Get ready before 9'
             rows={10}
             value={content}
             onChange={({target})=>setContent(target.value)}
             />
         </div>
       <div className='mt-3'>
-        <label className='input-label'>TAGS</label>
+        <label className='input-label '>TAGS</label>
         <TagInput tags={tags} setTags={setTags} />
       </div>
       {error && <p className='text-red-500 text-xs pt-4'>{error}</p>}
 
-  <button className='btn-primary font-medium mt-5 p-3' onClick={handleAddNote}>{type==='edit'?'EDIT' :'ADD' }</button>
+  <button className='btn-primary font-medium mt-5 p-3 hover:bg-teal-700' onClick={handleAddNote}>{type==='edit'?'EDIT' :'ADD' }</button>
     </div>
   )
 }

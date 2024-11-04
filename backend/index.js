@@ -73,7 +73,8 @@ app.post("/login", async (req, res) => {
 
 app.get("/get-user", authenticateToken, async (req, res) => {
   const  user = req.user;
-  console.log(user)
+ 
+  
   const isUser = await User.findOne({ _id: user.id });
 
   if (!isUser) {

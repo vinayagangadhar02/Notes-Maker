@@ -16,7 +16,7 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
     <div className='border m-5 rounded p-4 bg-white hover:shadow-xl transition-all ease-in-out'>
       <div className='flex items-center justify-between'>
         <div>
-          <h6 className="text-sm font-medium">{title}</h6>
+          <h1 className="text-sm font-medium">{title}</h1>
           <span className='text-xs text-slate-500'>{moment(date).format('Do MMM YYYY')}</span>
         </div>
         <MdOutlinePushPin
